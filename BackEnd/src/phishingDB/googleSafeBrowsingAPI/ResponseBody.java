@@ -20,8 +20,10 @@ public class ResponseBody {
 
   List<String> getUrls() {
     List<String> urls = new ArrayList<>();
-    for (MatchInstance instance : matches) {
-      urls.add(instance.threat.url);
+    if (matches != null) {
+      for (MatchInstance instance : matches) {
+        urls.add(instance.threat.url);
+      }
     }
     return urls;
   }

@@ -16,8 +16,6 @@ public class CheckURLs {
 
 //  public static void main(String[] args) {
 //    List<String> urls = new ArrayList<>();
-//    urls.add("http://caixa.suportefgtsliberadoparasaque.com/");
-//    urls.add("http://www.cwrucsa.com/images/home/?a=1");
 //    urls.add("https://www.google.com");
 //    List<String> maliciousUrls = CheckURLs.checkURLs(urls);
 //    for (String url : maliciousUrls) {
