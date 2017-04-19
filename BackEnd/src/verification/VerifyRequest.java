@@ -2,6 +2,9 @@ package verification;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 
+import phishingDB.googleSafeBrowsingAPI.CheckURLs;
 import util.AnalysisResult;
 import util.RequestBody;
 
@@ -54,6 +58,29 @@ public class VerifyRequest extends HttpServlet {
 		//TODO: send URL to lambda for normalization
 		
 		//TODO: check if normalized URL exist in phishing DB
+		List<String> urls = new ArrayList<>();
+		urls.add(requestBody.URL);
+		List<String> maliciousUrls = CheckURLs.checkURLs(urls);
+		if (!maliciousUrls.isEmpty()) {
+			response.getWriter().append("No malicious from DB");
+		} else {
+			response.getWriter().append("Bing ! from DB!");
+		}
+		
+		
+		
+		
+	//  public static void main(String[] args) {
+//	    List<String> urls = new ArrayList<>();
+//	    urls.add("http://caixa.suportefgtsliberadoparasaque.com/");
+//	    urls.add("http://www.cwrucsa.com/images/home/?a=1");
+//	    urls.add("https://www.google.com");
+//	    List<String> maliciousUrls = CheckURLs.checkURLs(urls);
+//	    for (String url : maliciousUrls) {
+//	      System.out.println(url);
+//	    }
+		
+		
 		
 		//TODO: analyze
 		result = analyze(requestBody.URL);

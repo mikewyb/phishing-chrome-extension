@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CheckURLs {
-  static List<String> checkURLs(List<String> urls) {
+  public static List<String> checkURLs(List<String> urls) {
     String result = Caller.call(urls);
 
     Gson gson = new Gson();
