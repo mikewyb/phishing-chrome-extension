@@ -18,6 +18,7 @@ import org.jsoup.nodes.Document;
 import com.google.gson.Gson;
 
 import phishingDB.googleSafeBrowsingAPI.CheckURLs;
+import util.AnalysisResponse;
 import util.AnalysisResult;
 import util.RequestBody;
 
@@ -60,7 +61,8 @@ public class VerifyRequest extends HttpServlet {
 		Gson gson = new Gson();
 		RequestBody requestBody = gson.fromJson(json.toString(), RequestBody.class);
 
-		AnalysisResult result = AnalysisResult.Unknown;
+		AnalysisResponse analysisResponse = new AnalysisResponse();
+		analysisResponse.result = AnalysisResult.Unknown;
 		
 		//TODO: send URL to lambda for normalization
 		
@@ -68,11 +70,7 @@ public class VerifyRequest extends HttpServlet {
 		List<String> urls = new ArrayList<>();
 		urls.add(requestBody.URL);
 		List<String> maliciousUrls = CheckURLs.checkURLs(urls);
-		if (!maliciousUrls.isEmpty()) {
-			response.getWriter().append("No malicious from DB");
-		} else {
-			response.getWriter().append("Bing ! from DB!");
-		}
+		response.getWriter().append(String.valueOf(maliciousUrls.size()));
 		
 		
 		
@@ -96,15 +94,15 @@ public class VerifyRequest extends HttpServlet {
 		// TODO: check if normalized requestURL exist in phishing DB
 
 		// TODO: analyze
-
-		result = analyze(requestBody.URL);
+		analysisResponse.result = analyze(requestBody.URL);
 
 		// TODO: format the response, the following for testing
-		response.getWriter().append("V2 Anti-Phishing Served at: ").append(request.getContextPath());
-		response.getWriter().println();
-		response.getWriter().append("Verifying information:").append(json.toString());
-		response.getWriter().println();
-		response.getWriter().append("Result:").append(result.name());
+//		response.getWriter().append("V2 Anti-Phishing Served at: ").append(request.getContextPath());
+//		response.getWriter().println();
+//		response.getWriter().append("Verifying information:").append(json.toString());
+//		response.getWriter().println();
+//		response.getWriter().append("Result:").append(result.name());
+		response.getWriter().append(analysisResponse.toString());
 	}
 
 	/**
