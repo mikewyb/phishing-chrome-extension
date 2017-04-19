@@ -1,0 +1,17 @@
+{
+  "manifest_version": 1,
+
+  "name": "Anti-Phishing extension",
+  "description": "This extension is a defender for the Phishing website",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "defender.png",
+    "default_popup": "popup.html",
+    "default_title": "Anti-Phishing Defender"
+  },
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/"
+  ]
+}
