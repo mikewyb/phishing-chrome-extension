@@ -1,5 +1,5 @@
 {
-  "manifest_version": 1,
+  "manifest_version": 2,
 
   "name": "Anti-Phishing extension",
   "description": "This extension is a defender for the Phishing website",
@@ -12,6 +12,7 @@
   },
   "permissions": [
     "activeTab",
-    "https://ajax.googleapis.com/"
+    "https://ajax.googleapis.com/",
+    "http://sample-env-1.9pp955vp8c.us-west-2.elasticbeanstalk.com/VerifyRequest"
   ]
 }
