@@ -11,40 +11,29 @@ public class RequestBody {
 
   class ThreatInfo {
     class Url {
-      public String url;
-      public Url(String url) {
+      String url;
+      Url(String url) {
         this.url = url;
       }
     }
 
-    public String[] threatTypes = {"MALWARE", "SOCIAL_ENGINEERING"};
-    public String[] platformTypes = {"WINDOWS"};
-    public String[] threatEntryTypes = {"URL"};
-    public List<Url> threatEntries = new ArrayList<>();
+    String[] threatTypes = {"MALWARE", "SOCIAL_ENGINEERING"};
+    String[] platformTypes = {"WINDOWS"};
+    String[] threatEntryTypes = {"URL"};
+    List<Url> threatEntries = new ArrayList<>();
 
-    public ThreatInfo(List<String> urls) {
+    ThreatInfo(List<String> urls) {
       for (String url : urls) {
         threatEntries.add(new Url(url));
       }
     }
   }
 
-  public Client client;
-  public ThreatInfo threatInfo;
+  Client client;
+  ThreatInfo threatInfo;
 
-  public RequestBody(List<String> urls) {
+  RequestBody(List<String> urls) {
     this.client = new Client();
     this.threatInfo = new ThreatInfo(urls);
   }
-
-//  public static void main(String[] args) {
-//    Gson gson = new Gson();
-//    List<String> urls = new ArrayList<>();
-//    urls.add("www1");
-//    urls.add("www3");
-//    RequestBody body = new RequestBody(urls);
-//    String str = gson.toJson(body);
-//    System.out.println(str);
-//  }
-
 }

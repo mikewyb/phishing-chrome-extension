@@ -17,7 +17,7 @@ public class CheckURLs {
 //  public static void main(String[] args) {
 //    List<String> urls = new ArrayList<>();
 //    urls.add("https://www.google.com");
-//    List<String> maliciousUrls = CheckURLs.checkURLs(urls);
+//    List<String> maliciousUrls = DynamoDBOperator.checkURLs(urls);
 //    for (String url : maliciousUrls) {
 //      System.out.println(url);
 //    }
