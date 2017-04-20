@@ -38,16 +38,14 @@ public class VerifyRequest extends HttpServlet {
 	}
 
 	/**
+	 * Both Get and Post currently are same
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO formatting request and response
-		// TODO adding real functional check of phishing
-		// TODO since Get method is not a good way to send request with body,
-		// may consider re-work
-
+		// parse request
 		StringBuilder json = new StringBuilder();
 		BufferedReader reader = request.getReader();
 		try {
@@ -61,48 +59,26 @@ public class VerifyRequest extends HttpServlet {
 		Gson gson = new Gson();
 		RequestBody requestBody = gson.fromJson(json.toString(), RequestBody.class);
 
+		// verify logic
 		AnalysisResponse analysisResponse = new AnalysisResponse();
-		analysisResponse.result = AnalysisResult.Unknown;
-		
-		//TODO: send URL to lambda for normalization
-		
-		//TODO: check if normalized URL exist in phishing DB
-		List<String> urls = new ArrayList<>();
-		urls.add(requestBody.URL);
-		List<String> maliciousUrls = CheckURLs.checkURLs(urls);
-		response.getWriter().append(String.valueOf(maliciousUrls.size()));
-		
-		
-		
-		
-	//  public static void main(String[] args) {
-//	    List<String> urls = new ArrayList<>();
-//	    urls.add("http://caixa.suportefgtsliberadoparasaque.com/");
-//	    urls.add("http://www.cwrucsa.com/images/home/?a=1");
-//	    urls.add("https://www.google.com");
-//	    List<String> maliciousUrls = CheckURLs.checkURLs(urls);
-//	    for (String url : maliciousUrls) {
-//	      System.out.println(url);
-//	    }
-		
-		
-		
-		//TODO: analyze
+		analysisResponse.setResult(AnalysisResult.Unknown);
 
-		// TODO: send requestURL to lambda for normalization
+		// TODO: send URL to lambda for normalization
 
-		// TODO: check if normalized requestURL exist in phishing DB
+		// check if normalized URL exist in phishing DB (blacklist)
+		analysisResponse.setInBlackList(checkBlackList(requestBody.getURL()));
+		if (analysisResponse.isInBlackList()) {
+			analysisResponse.setResult(AnalysisResult.Negative);
+			response.getWriter().append(gson.toJson(analysisResponse));
+			return;
+		}
+
+		// TODO: check if URL exist in whitelist
 
 		// TODO: analyze
-		analysisResponse.result = analyze(requestBody.URL);
+		analyze(requestBody, analysisResponse);
 
-		// TODO: format the response, the following for testing
-//		response.getWriter().append("V2 Anti-Phishing Served at: ").append(request.getContextPath());
-//		response.getWriter().println();
-//		response.getWriter().append("Verifying information:").append(json.toString());
-//		response.getWriter().println();
-//		response.getWriter().append("Result:").append(result.name());
-		response.getWriter().append(analysisResponse.toString());
+		response.getWriter().append(gson.toJson(analysisResponse));
 	}
 
 	/**
@@ -113,6 +89,28 @@ public class VerifyRequest extends HttpServlet {
 			throws ServletException, IOException {
 		// TODO considering report of phishing by communities
 		doGet(request, response);
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	private void analyze(RequestBody request, AnalysisResponse response) {
+		// TODO: fetching text from requestURL and analyze text
+//		String text = null;
+//		try {
+//			text = fetchTextData(requestURL);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		if (isPhishingWebByText(text)) {
+//			return AnalysisResult.Negative;
+//		}
+//
+//		// TODO
+//		return AnalysisResult.Unknown;
 	}
 
 	private String fetchTextData(String requestURL) throws IOException {
@@ -126,18 +124,18 @@ public class VerifyRequest extends HttpServlet {
 		System.out.println(doc.baseUri());
 		System.out.println("............text............");
 		System.out.println(doc.text());
-//		System.out.println("............head............");
-		
-		
-//		URL url = new URL(requestURL);
-//		System.out.println("protocol = " + url.getProtocol());  //TODO check protocol
-//		System.out.println("authority = " + url.getAuthority());
-//		System.out.println("host = " + url.getHost());   //TODO check host
-//		System.out.println("port = " + url.getPort());
-//		System.out.println("path = " + url.getPath());
-//		System.out.println("query = " + url.getQuery());
-//		System.out.println("filename = " + url.getFile());
-//		System.out.println("ref = " + url.getRef());
+		// System.out.println("............head............");
+
+		// URL url = new URL(requestURL);
+		// System.out.println("protocol = " + url.getProtocol()); //TODO check
+		// protocol
+		// System.out.println("authority = " + url.getAuthority());
+		// System.out.println("host = " + url.getHost()); //TODO check host
+		// System.out.println("port = " + url.getPort());
+		// System.out.println("path = " + url.getPath());
+		// System.out.println("query = " + url.getQuery());
+		// System.out.println("filename = " + url.getFile());
+		// System.out.println("ref = " + url.getRef());
 		return null;
 	}
 
@@ -153,26 +151,15 @@ public class VerifyRequest extends HttpServlet {
 		return false;
 	}
 
-	/**
-	 * 
-	 * @param requestURL
-	 * @return
-	 */
-	private AnalysisResult analyze(String requestURL) {
-		// TODO: fetching text from requestURL and analyze text
-		String text = null;
-		try {
-			text = fetchTextData(requestURL);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private boolean checkBlackList(String url) {
+		List<String> urls = new ArrayList<>();
+		urls.add(url);
+		List<String> maliciousUrls = CheckURLs.checkURLs(urls);
+		if (maliciousUrls.size() == 0) {
+			return false;
+		} else {
+			return true;
 		}
-		if (isPhishingWebByText(text)) {
-			return AnalysisResult.Negative;
-		}
-
-		// TODO
-		return AnalysisResult.Unknown;
 	}
 
 }

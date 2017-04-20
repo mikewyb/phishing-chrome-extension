@@ -1,12 +1,10 @@
 package util;
 
+import lombok.Data;
+
+@Data
 public class RequestBody {
-	//TODO more features and full class
 	
-	public String URL;
-	
-	public RequestBody() {
-		URL = null;
-	}
+	private String URL;
 	
 }
