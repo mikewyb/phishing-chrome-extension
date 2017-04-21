@@ -27,8 +27,8 @@
   <dependencies>
   	<dependency>
   		<groupId>javax.servlet</groupId>
-  		<artifactId>servlet-api</artifactId>
-  		<version>3.0-alpha-1</version>
+  		<artifactId>javax.servlet-api</artifactId>
+  		<version>4.0.0-b05</version>
   	</dependency>
   	<dependency>
   		<groupId>com.google.code.gson</groupId>
@@ -50,11 +50,10 @@
   		<artifactId>lombok</artifactId>
   		<version>1.16.16</version>
   	</dependency>
-      <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
       <dependency>
           <groupId>com.amazonaws</groupId>
           <artifactId>aws-java-sdk-dynamodb</artifactId>
-          <version>1.11.119</version>
+          <version>1.11.120</version>
       </dependency>
   </dependencies>
 </project>

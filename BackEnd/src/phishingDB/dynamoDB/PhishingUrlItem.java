@@ -15,6 +15,9 @@ public class PhishingUrlItem {
   private String source;
   private String target;
   private String submissionTime;
+  private Integer upVote;
+  private Integer downVote;
+
 
   @DynamoDBHashKey(attributeName="normalized_url")
   public String getNormalizedUrl() { return normalizedUrl;}
@@ -51,4 +54,12 @@ public class PhishingUrlItem {
   @DynamoDBAttribute(attributeName = "online")
   public Boolean getOnline() { return online; }
   public void setOnline(Boolean online) { this.online = online; }
+
+  @DynamoDBAttribute(attributeName = "up_vote")
+  public Integer getUpVote() { return upVote; }
+  public void setUpVote(Integer upVote) { this.upVote = upVote; }
+
+  @DynamoDBAttribute(attributeName = "down_vote")
+  public Integer getDownVote() { return downVote; }
+  public void setDownVote(Integer downVote) { this.downVote = downVote; }
 }
