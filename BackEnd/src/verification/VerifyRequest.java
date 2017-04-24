@@ -1,6 +1,5 @@
 package verification;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import java.net.MalformedURLException;
@@ -23,6 +22,9 @@ import phishingDB.googleSafeBrowsingAPI.CheckURLs;
 import util.AnalysisResponse;
 import util.AnalysisResult;
 import util.RequestBody;
+
+import static phishingDB.dynamoDB.DynamoDBOperator.checkUrl;
+import static util.ReadAllLines.readAllLines;
 
 /**
  * Servlet implementation class VerifyRequest
@@ -48,18 +50,8 @@ public class VerifyRequest extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
     // parse request
-    StringBuilder json = new StringBuilder();
-    BufferedReader reader = request.getReader();
-    try {
-      String line;
-      while ((line = reader.readLine()) != null) {
-        json.append(line).append("\n");
-      }
-    } finally {
-      reader.close();
-    }
     Gson gson = new Gson();
-    RequestBody requestBody = gson.fromJson(json.toString(), RequestBody.class);
+    RequestBody requestBody = gson.fromJson(readAllLines(request.getReader()), RequestBody.class);
 
     // verifying logic start here
     AnalysisResponse analysisResponse = new AnalysisResponse();
@@ -67,6 +59,9 @@ public class VerifyRequest extends HttpServlet {
 
     //check protocol
     analysisResponse.setSecurityProtocol(checkProtocol(requestBody.getURL()));
+    if (!analysisResponse.isSecurityProtocol()) {
+      analysisResponse.setResult(AnalysisResult.Unsafe);
+    }
 
     // TODO: send URL to lambda for normalization
 
@@ -76,6 +71,12 @@ public class VerifyRequest extends HttpServlet {
       analysisResponse.setResult(AnalysisResult.Dangerous);
       response.getWriter().append(gson.toJson(analysisResponse));
       return;
+    }
+
+    //check if in our own DynamoDB
+    if (checkUrl(requestBody.getURL()) != null) {
+      analysisResponse.setInBlackList(true);
+      analysisResponse.setResult(AnalysisResult.Suspicious);
     }
 
     // TODO: check if URL exist in whitelist
@@ -95,6 +96,8 @@ public class VerifyRequest extends HttpServlet {
     // TODO considering report of phishing by communities
     doGet(request, response);
   }
+
+
 
   /**
    * @param request
