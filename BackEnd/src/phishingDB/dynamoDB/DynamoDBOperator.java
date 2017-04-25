@@ -11,7 +11,7 @@ public class DynamoDBOperator {
                                         .build();
   private static DynamoDBMapper mapper = new DynamoDBMapper(client);
 
-  public static PhishingUrlItem checkUrl(String normalizedUrl) {
+  public static PhishingUrlItem checkPhishingUrl(String normalizedUrl) {
     PhishingUrlItem phishingUrlItem = new PhishingUrlItem();
     phishingUrlItem.setNormalizedUrl(normalizedUrl);
 
@@ -30,11 +30,30 @@ public class DynamoDBOperator {
     return null;
   }
 
-  public static void saveUrl(PhishingUrlItem urlItem) {
+  public static void savePhishingUrl(PhishingUrlItem urlItem) {
     mapper.save(urlItem);
   }
 
-  public static void deleteUrl(PhishingUrlItem urlItem) {
+  public static void deletePhishingUrl(PhishingUrlItem urlItem) {
     mapper.delete(urlItem);
+  }
+
+  public static boolean isInWhitelist(String domainName) {
+    PhishingWhitelistItem phishingWhitelistItem = new PhishingWhitelistItem();
+    phishingWhitelistItem.setDomainName(domainName);
+
+    try {
+      PhishingWhitelistItem result = mapper.load(phishingWhitelistItem);
+      if (result != null) {
+        return result.getValid();
+      } else {
+        System.out.println(domainName + " is not in whitelist");
+      }
+    } catch (Exception e) {
+      System.err.println("Unable to retrieve data: ");
+      System.err.println(e.getMessage());
+    }
+
+    return false;
   }
 }

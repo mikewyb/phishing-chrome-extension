@@ -27,7 +27,7 @@ import util.AnalysisResponse;
 import util.AnalysisResult;
 import util.RequestBody;
 
-import static phishingDB.dynamoDB.DynamoDBOperator.checkUrl;
+import static phishingDB.dynamoDB.DynamoDBOperator.checkPhishingUrl;
 import static util.ReadAllLines.readAllLines;
 
 /**
@@ -78,7 +78,7 @@ public class VerifyRequest extends HttpServlet {
     }
 
     //check if in our own DynamoDB
-    PhishingUrlItem item = checkUrl(requestBody.getURL());
+    PhishingUrlItem item = checkPhishingUrl(requestBody.getURL());
     if (item != null) {
       if (item.getVerified()) {
         analysisResponse.setInBlackList(true);

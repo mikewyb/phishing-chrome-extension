@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static phishingDB.dynamoDB.DynamoDBOperator.saveUrl;
+import static phishingDB.dynamoDB.DynamoDBOperator.savePhishingUrl;
 import static util.ReadAllLines.readAllLines;
 
 /**
@@ -52,7 +52,7 @@ public class SuspectReport extends HttpServlet {
     try {
       PhishingUrlItem item = new PhishingUrlItem();
       item.setNormalizedUrl(requestBody.getURL());
-      saveUrl(item);
+      savePhishingUrl(item);
       response.getWriter().append("successful");
     } catch (Exception e) {
       response.getWriter().append("fail");
