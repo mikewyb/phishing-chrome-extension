@@ -125,9 +125,10 @@ public class VerifyRequest extends HttpServlet {
     Document doc = null;
     try {
       doc = Jsoup.connect(request.getURL()).get();
-    } catch (IOException e) {
+    } catch (Exception e) {
       //silence for request fail
       response.setResult(AnalysisResult.Unsafe);
+      return;
     }
     Elements all_links = doc.select("a");
     System.out.println("Result size:" + all_links.size());
@@ -147,7 +148,7 @@ public class VerifyRequest extends HttpServlet {
     String title = doc.title().split(" ")[0];
     try {
       URL requestURL = new URL(request.getURL());
-      if (title.compareToIgnoreCase(requestURL.getHost().split(".")[0]) == 0) {
+      if (title.compareToIgnoreCase(requestURL.getHost().split("\\.")[0]) == 0) {
         response.setResult(AnalysisResult.Safe);
       }
     } catch (MalformedURLException e) {
