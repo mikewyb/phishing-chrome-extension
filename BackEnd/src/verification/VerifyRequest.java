@@ -14,10 +14,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Document;
 
 import com.google.gson.Gson;
 
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import phishingDB.dynamoDB.PhishingUrlItem;
 import phishingDB.googleSafeBrowsingAPI.CheckURLs;
 import util.AnalysisResponse;
 import util.AnalysisResult;
@@ -74,9 +78,14 @@ public class VerifyRequest extends HttpServlet {
     }
 
     //check if in our own DynamoDB
-    if (checkUrl(requestBody.getURL()) != null) {
-      analysisResponse.setInBlackList(true);
-      analysisResponse.setResult(AnalysisResult.Suspicious);
+    PhishingUrlItem item = checkUrl(requestBody.getURL());
+    if (item != null) {
+      if (item.getVerified()) {
+        analysisResponse.setInBlackList(true);
+        analysisResponse.setResult(AnalysisResult.Dangerous);
+      } else {
+        analysisResponse.setResult(AnalysisResult.Suspicious);
+      }
     }
 
     // TODO: check if URL exist in whitelist
@@ -104,56 +113,51 @@ public class VerifyRequest extends HttpServlet {
    * @param response
    */
   private void analyze(RequestBody request, AnalysisResponse response) {
-    // TODO: fetching text from requestURL and analyze text
-//		String text = null;
-//		try {
-//			text = fetchTextData(requestURL);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		if (isPhishingWebByText(text)) {
-//			return AnalysisResult.Negative;
-//		}
-//
-//		// TODO
-//		return AnalysisResult.Unknown;
+    //logo link match
+    Document doc = null;
+    try {
+      doc = Jsoup.connect(request.getURL()).get();
+    } catch (IOException e) {
+      //silence for request fail
+      response.setResult(AnalysisResult.Unsafe);
+    }
+    Elements all_links = doc.select("a");
+    System.out.println("Result size:" + all_links.size());
+    for (Element ele : all_links) {
+      String link = ele.attr("href");
+      for (Attribute attr : ele.attributes()) {
+        if (attr.getValue().toLowerCase().contains("logo")) {
+          if (!isHostMatch(link, request.getURL())) {
+            response.setResult(AnalysisResult.Suspicious);
+          }
+          break;
+        }
+      }
+    }
+
+    //title matching
+    String title = doc.title().split(" ")[0];
+    try {
+      URL requestURL = new URL(request.getURL());
+      if (title.compareToIgnoreCase(requestURL.getHost().split(".")[0]) == 0) {
+        response.setResult(AnalysisResult.Safe);
+      }
+    } catch (MalformedURLException e) {
+      //silence
+    }
   }
 
-  private String fetchTextData(String requestURL) throws IOException {
-    Document doc = Jsoup.connect(requestURL).get();
-    String title = doc.title();
-    System.out.println("............title............");
-    System.out.println(title);
-    System.out.println("............body............");
-    System.out.println(doc.body().text());
-    System.out.println("............base URI............");
-    System.out.println(doc.baseUri());
-    System.out.println("............text............");
-    System.out.println(doc.text());
-    // System.out.println("............head............");
-
-    // URL url = new URL(requestURL);
-    // System.out.println("protocol = " + url.getProtocol()); //TODO check
-    // protocol
-    // System.out.println("authority = " + url.getAuthority());
-    // System.out.println("host = " + url.getHost()); //TODO check host
-    // System.out.println("port = " + url.getPort());
-    // System.out.println("path = " + url.getPath());
-    // System.out.println("query = " + url.getQuery());
-    // System.out.println("filename = " + url.getFile());
-    // System.out.println("ref = " + url.getRef());
-    return null;
-  }
-
-  /**
-   * @param text
-   * @return true for phishing website otherwise false (which may or may not
-   * be a phsihing)
-   */
-  private boolean isPhishingWebByText(String text) {
-    // TODO tf/idf or/and email/title/footer extracting
-
+  private boolean isHostMatch(String requestURL, String analysisURL) {
+    try {
+      URL rURL = new URL(requestURL);
+      URL aURL = new URL(analysisURL);
+      System.out.println("compare:" + rURL.getHost() + " with :" + aURL.getHost());
+      if (rURL.getHost().equalsIgnoreCase(aURL.getHost())) {
+        return true;
+      }
+    } catch (MalformedURLException e) {
+      //silence for illegal url
+    }
     return false;
   }
 
