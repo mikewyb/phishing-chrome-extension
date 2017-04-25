@@ -28,6 +28,7 @@ import util.AnalysisResult;
 import util.RequestBody;
 
 import static phishingDB.dynamoDB.DynamoDBOperator.checkPhishingUrl;
+import static phishingDB.dynamoDB.DynamoDBOperator.isInWhitelist;
 import static util.ReadAllLines.readAllLines;
 
 /**
@@ -67,6 +68,14 @@ public class VerifyRequest extends HttpServlet {
       analysisResponse.setResult(AnalysisResult.Unsafe);
     }
 
+    // check if URL exist in whitelist
+    analysisResponse.setInWhiteList(checkWhiteList(requestBody.getURL()));
+    if (analysisResponse.isInWhiteList()) {
+      analysisResponse.setResult(AnalysisResult.Safe);
+      response.getWriter().append(gson.toJson(analysisResponse));
+      return;
+    }
+
     // TODO: send URL to lambda for normalization
 
     // check if normalized URL exist in phishing DB (blacklist)
@@ -88,13 +97,12 @@ public class VerifyRequest extends HttpServlet {
       }
     }
 
-    // TODO: check if URL exist in whitelist
-
     // TODO: analyze
     analyze(requestBody, analysisResponse);
 
     response.getWriter().append(gson.toJson(analysisResponse));
   }
+
 
   /**
    * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
@@ -170,7 +178,23 @@ public class VerifyRequest extends HttpServlet {
         return true;
       }
     } catch (MalformedURLException e) {
-      e.printStackTrace();
+      //silence
+    }
+    return false;
+  }
+
+  private boolean checkWhiteList(String requestURL) {
+    try {
+      URL url = new URL(requestURL);
+      String completeHost = url.getHost();
+      int index = Math.min(completeHost.length(), completeHost.indexOf(".") + 1);
+      String host = completeHost.substring(index);
+      if (isInWhitelist(host)) {
+        System.out.println("found white");
+        return true;
+      }
+    } catch (MalformedURLException e) {
+      //silence for now
     }
     return false;
   }
@@ -185,5 +209,4 @@ public class VerifyRequest extends HttpServlet {
       return true;
     }
   }
-
 }
