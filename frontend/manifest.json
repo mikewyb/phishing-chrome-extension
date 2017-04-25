@@ -14,6 +14,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
+      "css":["modal.css"],
       "js": ["main.js"]
     }
   ],
@@ -24,3 +25,4 @@
     "http://sample-env-1.9pp955vp8c.us-west-2.elasticbeanstalk.com/VerifyRequest"
   ]
 }
+
