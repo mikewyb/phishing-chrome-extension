@@ -40,18 +40,20 @@ function sendToServer(url) {
   };
 }
 
+function restore(backgroundDiv, modalDiv) {
+  backgroundDiv.parentNode.removeChild(backgroundDiv);
+  modalDiv.parentNode.removeChild(modalDiv);
+}
+
 function manipulateResponse(responseText) {
-  alert(responseText);
+  //alert(responseText);
   var response = JSON.parse(responseText);
   var isSecurityProtocol = response.isSecurityProtocol;
   var isInBlackList = response.isInBlackList;
   var isInWhiteList = response.isInWhiteList;
   var result = response.result;
-
-  //Create div
-  var div = document.createElement("div");
-  div.className = "modal";
-  document.body.appendChild(div);
+  
+  //document.getElementById('lc').appendChild(element);
 
   switch (result) {
     case 'Safe':
@@ -68,14 +70,54 @@ function manipulateResponse(responseText) {
       createDiv("Unknown", "Yellow");
       break;
   }
-  
+   
 }
 
 function createDiv(type, color) {
-  //Create div
-  var div = document.createElement("div");
-  div.className = "modal";
-  document.body.appendChild(div);
+  /*
+  HTML structure of the overlay modal
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p>Some text in the Modal Body</p>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+  */
+  var backgroundDiv = document.createElement("div");
+  backgroundDiv.className = "overlay";
+
+  var modalDiv = document.createElement("div");
+  modalDiv.className = "myModal";
+
+  var modal_headerDIV = document.createElement("div");
+  modal_headerDIV.className = "myModal-header";
+
+  var modal_bodyDIV = document.createElement("div");
+  modal_bodyDIV.className = "myModal-body";
+
+  var modal_footerDIV = document.createElement("div");
+  modal_footerDIV.className = "myModal-footer";
+
+  //modalDiv.id = "modal";
+  var closeSpan = document.createElement("span");
+  closeSpan.innerHTML = "&times;";
+  closeSpan.id = "closeModal";
+  closeSpan.addEventListener("click", function(){restore(backgroundDiv, modalDiv)}, false);
+
+  var textP = document.createElement("p");
+  textP.innerHTML = "This is a Dangerous website!";
+
+  modal_headerDIV.appendChild(closeSpan);
+  modalDiv.appendChild(modal_headerDIV);
+  modal_bodyDIV.appendChild(textP);
+  modalDiv.appendChild(modal_bodyDIV);
+  modalDiv.appendChild(modal_footerDIV);
+  document.body.appendChild(backgroundDiv);
+  document.body.appendChild(modalDiv);
 }
 
 //getCurrentTabUrl(sendToServer);
