@@ -29,7 +29,10 @@ function getCurrentTabUrl() {
 
 function sendToServer(url) {
   var xhttp = new XMLHttpRequest();
-  xhttp.open("POST", "http://sample-env-1.9pp955vp8c.us-west-2.elasticbeanstalk.com/VerifyRequest", true);
+  //xhttp.open("POST", "http://sample-env-1.9pp955vp8c.us-west-2.elasticbeanstalk.com/VerifyRequest", true);
+  //xhttp.open("POST", "http://antiphishing-env.us-east-1.elasticbeanstalk.com/VerifyRequest", true);
+  xhttp.open("POST", "https://antiphishing.yuhengzhan.com/VerifyRequest", true);
+  
   xhttp.setRequestHeader("Content-Type", "application/json");
   var data = { "URL" : url };
   xhttp.send(JSON.stringify(data));
@@ -43,6 +46,22 @@ function sendToServer(url) {
 function restore(backgroundDiv, modalDiv) {
   backgroundDiv.parentNode.removeChild(backgroundDiv);
   modalDiv.parentNode.removeChild(modalDiv);
+  analyze_page();
+}
+
+function analyze_page() {
+  var inputs = document.getElementsByTagName('input');
+
+  for(var i = 0; i < inputs.length; i++) {
+    if(inputs[i].type.toLowerCase() == 'password') {
+      inputs[i].setAttribute("style", "background-color: red;");
+      inputs[i].addEventListener("click", alertUser);
+    }
+  }
+}
+
+function alertUser() {
+  alert('Your credential information may be sending to others!')
 }
 
 function manipulateResponse(responseText) {
@@ -52,23 +71,28 @@ function manipulateResponse(responseText) {
   var isInBlackList = response.isInBlackList;
   var isInWhiteList = response.isInWhiteList;
   var result = response.result;
-  
-  //document.getElementById('lc').appendChild(element);
 
+  //alert(result)
   switch (result) {
     case 'Safe':
+      alert("Safe");
+      createDiv("Dangerous", "Red");
       break;
     case 'Unsafe':
+      alert("Unsafe");
       break;
     case 'Suspicious':
       createDiv("Suspicious", "Yellow");
       break;
-    case 'Dangerous':
+    case "Dangerous":
+      //alert("Dangerous");
       createDiv("Dangerous", "Red");
       break;
     case 'Unknown':
       createDiv("Unknown", "Yellow");
       break;
+    default:
+      alert("default");
   }
    
 }
