@@ -6,9 +6,13 @@
   "version": "1.0",
 
   "browser_action": {
-    "default_icon": "defender.png",
+    "default_icon": "images/safe.png",
     "default_popup": "menu.html",
     "default_title": "Anti-Phishing Defender"
+  },
+
+  "background": {
+    "scripts": ["background.js"]
   },
 
   "content_scripts": [
@@ -22,7 +26,7 @@
   "permissions": [
     "activeTab",
     "https://ajax.googleapis.com/",
-    "http://sample-env-1.9pp955vp8c.us-west-2.elasticbeanstalk.com/VerifyRequest"
+    "https://antiphishing.yuhengzhan.com/VerifyRequest"
   ]
 }
 

@@ -75,17 +75,18 @@ function manipulateResponse(responseText) {
   //alert(result)
   switch (result) {
     case 'Safe':
-      alert("Safe");
-      createDiv("Dangerous", "Red");
+      chrome.runtime.sendMessage({ "newIconPath" : "/images/safe.png" });
       break;
     case 'Unsafe':
       alert("Unsafe");
       break;
     case 'Suspicious':
+      chrome.runtime.sendMessage({ "newIconPath" : "/images/suspicious.png" });
       createDiv("Suspicious", "Yellow");
       break;
     case "Dangerous":
       //alert("Dangerous");
+      chrome.runtime.sendMessage({ "newIconPath" : "/images/dangeous.png" });
       createDiv("Dangerous", "Red");
       break;
     case 'Unknown':
