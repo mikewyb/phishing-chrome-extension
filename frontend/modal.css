@@ -11,18 +11,24 @@
 
 /* just some content with arbitrary styles for explanation purposes */
 .myModal {
+    /*
     width: 300px;
     height: 200px;
     line-height: 200px;
+    */
+    width: 40%;
+    height: 30%;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    margin-top: -100px;
-    margin-left: -150px;
+    top: 35%;
+    left: 30%;
+    /*
+    margin-top: -10%;
+    margin-left: -40%;
+    */
     /*background-color: #f1c40f;*/
     background-color: white;
     /*border-radius: 5px;*/
-    border: 1px solid #888;
+    /*border: 1px solid #888;*/
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     /*text-align: center;*/
     z-index: 11; /* 1px higher than the overlay layer */
@@ -31,8 +37,8 @@
 /* The Close Button */
 #closeModal {
     position: fixed;
-    top: 21%;
-    left: 60%;
+    top: 35%;
+    left: 68%;
     color: #aaaaaa;
     /*float: right;*/
     font-size: 28px;
@@ -47,17 +53,36 @@
 }
 
 .myModal-header {
-    padding: 2px 16px;
-    height: 20px;
+    position: fixed;
+    /*padding: 2px 16px;*/
+    top: 35%;
+    left: 30%;
+    width: 40%;
+    height: 6%;
     /*background-color: #5cb85c;*/
     background-color: red;
     color: white;
 }
 
-.myModal-body {padding: 2px 16px;}
+.myModal-body {
+    position: fixed;
+    top: 41%;
+    left: 30%;
+    /*padding: 2px 16px;*/
+    width: 40%;
+    height: 18%;
+    text-align: center;
+    font-family: "Georgia", Times, serif;
+    font-size: 30px;
+}
 
 .myModal-footer {
-    padding: 2px 16px;
-    background-color: #5cb85c;
+    position: fixed;
+    /*padding: 2px 16px;*/
+    top: 59%;
+    left: 30%;
+    width: 40%;
+    height: 6%;
+    background-color: red;
     color: white;
 }

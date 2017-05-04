@@ -54,7 +54,13 @@ function analyze_page() {
 
   for(var i = 0; i < inputs.length; i++) {
     if(inputs[i].type.toLowerCase() == 'password') {
-      inputs[i].setAttribute("style", "background-color: red;");
+      var attribute = inputs[i].getAttribute("style");
+      if (attribute == "") {
+        attribute = "background-color: red;";
+      } else {
+        attribute += ";background-color: red;";
+      }
+      inputs[i].setAttribute("style", attribute);
       inputs[i].addEventListener("click", alertUser);
     }
   }
@@ -75,10 +81,12 @@ function manipulateResponse(responseText) {
   //alert(result)
   switch (result) {
     case 'Safe':
+      //createDiv("Suspicious", "Yellow");
       chrome.runtime.sendMessage({ "newIconPath" : "/images/safe.png" });
       break;
     case 'Unsafe':
-      alert("Unsafe");
+      //alert("Unsafe");
+      chrome.runtime.sendMessage({ "newIconPath" : "/images/suspicious.png" });
       break;
     case 'Suspicious':
       chrome.runtime.sendMessage({ "newIconPath" : "/images/suspicious.png" });
@@ -90,7 +98,8 @@ function manipulateResponse(responseText) {
       createDiv("Dangerous", "Red");
       break;
     case 'Unknown':
-      createDiv("Unknown", "Yellow");
+      alert("Unknown");
+      //createDiv("Unknown", "Yellow");
       break;
     default:
       alert("default");
@@ -133,11 +142,18 @@ function createDiv(type, color) {
   closeSpan.id = "closeModal";
   closeSpan.addEventListener("click", function(){restore(backgroundDiv, modalDiv)}, false);
 
+  var oImg = document.createElement("img");
+  oImg.setAttribute('src', 'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQheS6lw8YLsJ20vfv7Q_Fx0QwKiDPXYkORu88VPD4SJHnY4RLS');
+  oImg.setAttribute('alt', 'na');
+  oImg.setAttribute("height", "30px");
+  oImg.setAttribute("width", "30px");
+
   var textP = document.createElement("p");
   textP.innerHTML = "This is a Dangerous website!";
 
   modal_headerDIV.appendChild(closeSpan);
   modalDiv.appendChild(modal_headerDIV);
+  modal_bodyDIV.appendChild(oImg);
   modal_bodyDIV.appendChild(textP);
   modalDiv.appendChild(modal_bodyDIV);
   modalDiv.appendChild(modal_footerDIV);
